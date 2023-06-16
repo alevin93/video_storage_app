@@ -61,7 +61,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final scaleFactor = .015 +
         (distance.abs() /
             height *
-            0.01); // Adjust first number the factor to control the speed increase
+            0.000001); // Adjust first number the factor to control the speed increase
     final skipMilliseconds = (maxSkip * scaleFactor).toInt();
     final skipDuration = Duration(milliseconds: skipMilliseconds);
 
@@ -76,7 +76,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     if (scrubPosition < Duration.zero) {
       scrubPosition = Duration.zero;
     } else if (scrubPosition > videoDuration) {
-      scrubPosition = videoDuration;
+      scrubPosition = videoDuration * .99;
     }
 
     _controller.seekTo(scrubPosition);

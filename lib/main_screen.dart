@@ -31,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
     await _databaseHelper.delete(videoId);
     setState(() {}); // Refresh the UI after deletion
   }
+
   void _showDeleteConfirmation(BuildContext context, Video video) {
     showDialog(
       context: context,
@@ -127,7 +128,8 @@ class _MainScreenState extends State<MainScreen> {
             final videos = snapshot.data!;
             return OrientationBuilder(
               builder: (context, orientation) {
-                final crossAxisCount = orientation == Orientation.portrait ? 2 : 3;
+                final crossAxisCount =
+                    orientation == Orientation.portrait ? 2 : 3;
                 return StaggeredGridView.countBuilder(
                   primary: false,
                   padding: const EdgeInsets.all(20),
@@ -142,7 +144,8 @@ class _MainScreenState extends State<MainScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => VideoPlayerScreen(videoUrl: video.path),
+                            builder: (context) =>
+                                VideoPlayerScreen(videoUrl: video.path),
                           ),
                         );
                       },
@@ -156,13 +159,21 @@ class _MainScreenState extends State<MainScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   ListTile(
-                                    title: Center(child: Text(
-                                      'Delete',
-                                      style: TextStyle(fontSize: 18),
-                                    )),
+                                    title: Center(
+                                        child: Text('Delete',
+                                            style: TextStyle(fontSize: 18))),
                                     onTap: () {
                                       Navigator.of(context).pop();
                                       _showDeleteConfirmation(context, video);
+                                    },
+                                  ),
+                                  ListTile(
+                                    title: Center(
+                                        child: Text('Show File Path',
+                                            style: TextStyle(fontSize: 18))),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      _showFilePath(context, video);
                                     },
                                   ),
                                 ],
@@ -185,4 +196,8 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
+}
+
+void _showFilePath(BuildContext context, Video video) {
+  print("File Path is:  " + video.path);
 }

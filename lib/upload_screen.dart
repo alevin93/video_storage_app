@@ -7,6 +7,8 @@ import 'dart:async';
 import 'dart:io';
 import 'database_helper.dart'; // Import your database helper class
 import 'video_model.dart';
+import 'encryption_service.dart';
+import 'encryption_contract.dart';
 
 class UploadScreen extends StatefulWidget {
   UploadScreen({Key? key}) : super(key: key);
@@ -21,8 +23,10 @@ class _UploadScreenState extends State<UploadScreen> {
   List<String> _tags = [];
   String _fileName = 'No file selected';
   File? _file;
+  late final IEncryption _encryption;
 
-  Future<void> _saveVideoToDatabase(String videoPath, String thumbnailPath) async {
+  Future<void> _saveVideoToDatabase(
+      String videoPath, String thumbnailPath) async {
     final video = Video(
       id: DateTime.now().millisecondsSinceEpoch,
       path: videoPath,
@@ -38,6 +42,24 @@ class _UploadScreenState extends State<UploadScreen> {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
+    // Create a directory for the videos if it doesn't exist
+    final directory = await getExternalStorageDirectory();
+    final videosDirectory = Directory('${directory!.path}/../../../../Documents/Private');
+    if (!videosDirectory.existsSync()) {
+      videosDirectory.createSync();
+    }
+
+    print("Video Directory is:  " + videosDirectory.toString());
+
+    // Get the file name from the video path
+    final fileName = videoPath.split('/').last;
+
+    // Create a new file in the videos directory
+    final videoFile = File('${videosDirectory.path}/$fileName');
+
+    // Copy the video file to the new location
+    await File(videoPath).copy(videoFile.path);
+
     // Clear the fields and navigate back
     _tags.clear();
     _fileName = 'No file selected';
@@ -46,6 +68,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
     Navigator.pop(context); // Go back to the previous screen
   }
+
   Future<void> _selectVideo() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null) {
